@@ -296,7 +296,7 @@ textarea{resize:vertical;min-height:80px;}
     </div>
     <div class="topbar-right">
       <button class="top-btn" onclick="showModal('addModal')">+ Quick Add</button>
-      <button class="top-btn theme-toggle" id="theme-toggle" type="button" aria-label="Toggle light and dark mode" aria-pressed="false">
+      <button class="top-btn theme-toggle" id="theme-toggle" type="button" aria-label="Toggle light and dark mode">
         <span class="theme-icon" aria-hidden="true">🌙</span>
         <span class="theme-label">Dark</span>
       </button>
@@ -309,7 +309,7 @@ textarea{resize:vertical;min-height:80px;}
 
     <!-- DASHBOARD -->
     <div class="section active" id="sec-dashboard">
-      <p class="section-title">Good morning, Admin Officer</p>
+      <p class="section-title"><span id="greeting">Good morning</span>, Admin Officer</p>
       <p class="section-sub">Here's what's happening on campus today.</p>
 
       <div class="stats-grid">
@@ -951,6 +951,12 @@ textarea{resize:vertical;min-height:80px;}
 <script>
 // Date
 document.getElementById('cur-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+const greetingEl = document.getElementById('greeting');
+if (greetingEl) {
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  greetingEl.textContent = greeting;
+}
 
 // Theme
 const themeToggle = document.getElementById('theme-toggle');
@@ -964,7 +970,7 @@ function setTheme(theme) {
   themeToggle.querySelector('.theme-label').textContent = isLight ? 'Light' : 'Dark';
 }
 const savedTheme = localStorage.getItem('theme');
-const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
 setTheme(savedTheme || (prefersLight ? 'light' : 'dark'));
 if (themeToggle) {
   themeToggle.addEventListener('click', () => {
