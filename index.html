@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedERP — College Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0f1a;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --border: #1f2f48;
+  --accent: #00c9a7;
+  --accent2: #0ea5e9;
+  --accent3: #f59e0b;
+  --danger: #ef4444;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #475569;
+  --sidebar-w: 260px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden;}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;flex-shrink:0;transition:.3s;}
+.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid var(--border);}
+.sidebar-logo h1{font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent);letter-spacing:.5px;}
+.sidebar-logo p{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:1.5px;}
+.admin-badge{margin:16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;}
+.admin-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:#0a0f1a;flex-shrink:0;}
+.admin-info p{font-size:13px;font-weight:600;}
+.admin-info span{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;}
+nav{flex:1;overflow-y:auto;padding:8px 0;}
+nav::-webkit-scrollbar{width:4px;}
+nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.nav-section{padding:8px 16px 4px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;border-radius:0;transition:.2s;font-size:13.5px;color:var(--text2);position:relative;margin:1px 8px;border-radius:8px;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:linear-gradient(90deg,rgba(0,201,167,.12),rgba(0,201,167,.04));color:var(--accent);border-left:2px solid var(--accent);border-radius:0 8px 8px 0;margin-left:8px;}
+.nav-item .icon{width:18px;text-align:center;font-size:15px;}
+.nav-badge{margin-left:auto;background:var(--accent);color:#0a0f1a;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);text-align:center;}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+#topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-left h2{font-size:18px;font-weight:600;}
+.topbar-left p{font-size:12px;color:var(--text2);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.top-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:12px;color:var(--text2);cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;}
+.top-btn:hover{border-color:var(--accent);color:var(--accent);}
+.notif-dot{width:8px;height:8px;background:var(--danger);border-radius:50%;position:absolute;top:6px;right:6px;}
+.top-icon{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;}
+
+#content{flex:1;overflow-y:auto;padding:24px 28px;}
+#content::-webkit-scrollbar{width:6px;}
+#content::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* SECTIONS */
+.section{display:none;animation:fadeIn .3s ease;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;filter:blur(30px);opacity:.3;}
+.stat-card.green::before{background:var(--accent);}
+.stat-card.blue::before{background:var(--accent2);}
+.stat-card.amber::before{background:var(--accent3);}
+.stat-card.red::before{background:var(--danger);}
+.stat-label{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.stat-value{font-family:'DM Serif Display',serif;font-size:36px;line-height:1;}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:6px;}
+.stat-icon{position:absolute;top:16px;right:16px;font-size:24px;opacity:.4;}
+
+/* TABLE */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:14px;font-weight:600;}
+.card-actions{display:flex;gap:8px;}
+.btn{border:none;border-radius:8px;padding:8px 16px;font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;transition:.2s;}
+.btn-primary{background:var(--accent);color:#0a0f1a;}
+.btn-primary:hover{background:#00b396;}
+.btn-secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+.btn-secondary:hover{border-color:var(--accent2);color:var(--accent2);}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.2);}
+.btn-sm{padding:5px 10px;font-size:11.5px;}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 16px;font-size:11px;color:var(--text3);text-align:left;text-transform:uppercase;letter-spacing:.8px;background:var(--surface2);font-weight:600;}
+td{padding:11px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-green{background:rgba(0,201,167,.12);color:var(--accent);}
+.badge-blue{background:rgba(14,165,233,.12);color:var(--accent2);}
+.badge-amber{background:rgba(245,158,11,.12);color:var(--accent3);}
+.badge-red{background:rgba(239,68,68,.12);color:var(--danger);}
+.badge-gray{background:var(--surface2);color:var(--text3);}
+
+/* SEARCH BAR */
+.search-bar{display:flex;gap:10px;margin-bottom:20px;align-items:center;}
+.search-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:.2s;}
+.search-input:focus{border-color:var(--accent2);}
+.search-input::placeholder{color:var(--text3);}
+select.search-input{cursor:pointer;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:fadeIn .2s ease;}
+.modal h3{font-size:17px;font-weight:600;margin-bottom:20px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:12px;color:var(--text2);font-weight:500;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:80px;}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+
+/* DASHBOARD QUICK LINKS */
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+.quick-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:.2s;}
+.quick-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.quick-card .qicon{font-size:28px;margin-bottom:8px;}
+.quick-card p{font-size:12px;color:var(--text2);}
+
+/* PROGRESS BAR */
+.prog-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:4px;}
+.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+
+/* CALENDAR GRID */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:6px;cursor:pointer;color:var(--text2);}
+.cal-day:hover{background:var(--surface2);}
+.cal-day.today{background:var(--accent);color:#0a0f1a;font-weight:700;}
+.cal-day.has-event{border:1px solid var(--accent2);color:var(--accent2);}
+.cal-day.holiday{background:rgba(239,68,68,.1);color:var(--danger);}
+.cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px;}
+.cal-header span{text-align:center;font-size:10px;color:var(--text3);text-transform:uppercase;font-weight:600;}
+
+/* ATTENDANCE CIRCLE */
+.att-circle{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;border:4px solid;}
+.att-high{border-color:var(--accent);color:var(--accent);}
+.att-mid{border-color:var(--accent3);color:var(--accent3);}
+.att-low{border-color:var(--danger);color:var(--danger);}
+
+/* TWO COL LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+@media(max-width:900px){.two-col,.three-col{grid-template-columns:1fr;}}
+
+/* TIMELINE */
+.timeline{padding:0 4px;}
+.tl-item{display:flex;gap:12px;padding-bottom:16px;position:relative;}
+.tl-item::before{content:'';position:absolute;left:17px;top:28px;bottom:0;width:1px;background:var(--border);}
+.tl-item:last-child::before{display:none;}
+.tl-dot{width:34px;height:34px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.tl-content p{font-size:13px;font-weight:500;}
+.tl-content span{font-size:11px;color:var(--text3);}
+
+.section-title{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:4px;}
+.section-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
+
+/* TIMETABLE */
+.tt-grid{display:grid;grid-template-columns:80px repeat(6,1fr);gap:4px;}
+.tt-cell{background:var(--surface2);border-radius:8px;padding:10px 8px;font-size:11px;text-align:center;min-height:60px;display:flex;flex-direction:column;justify-content:center;gap:2px;}
+.tt-cell.header{background:transparent;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+.tt-cell.pharm{background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.15);color:var(--accent);}
+.tt-cell.chem{background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.15);color:var(--accent2);}
+.tt-cell.anatomy{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);color:var(--accent3);}
+.tt-cell.patho{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);color:var(--danger);}
+.tt-cell.lab{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15);color:#a78bfa;}
+.tt-cell.free{background:transparent;color:var(--text3);}
+.tt-time{font-size:10px;color:var(--text3);}
+
+/* CHART BARS */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;padding:0 4px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--accent),rgba(0,201,167,.3));transition:1s;}
+.bar-label{font-size:10px;color:var(--text3);}
+.bar-val{font-size:10px;color:var(--text2);font-weight:600;}
+
+/* FEE */
+.fee-summary{display:flex;gap:4px;align-items:center;margin-bottom:4px;}
+.fee-pill{font-size:11px;padding:2px 8px;border-radius:20px;}
+
+/* LIBRARY */
+.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.book-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:.2s;}
+.book-card:hover{border-color:var(--accent2);}
+.book-card .b-spine{height:6px;border-radius:3px;margin-bottom:10px;}
+.book-card .b-title{font-size:12px;font-weight:600;line-height:1.3;margin-bottom:4px;}
+.book-card .b-author{font-size:11px;color:var(--text3);}
+.book-card .b-copies{font-size:11px;color:var(--text2);margin-top:8px;}
+
+/* NOTICE BOARD */
+.notice-list{display:flex;flex-direction:column;gap:12px;}
+.notice-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;border-left:3px solid var(--accent);}
+.notice-item.urgent{border-left-color:var(--danger);}
+.notice-item.info{border-left-color:var(--accent2);}
+.notice-item .n-title{font-size:14px;font-weight:600;margin-bottom:4px;}
+.notice-item .n-meta{font-size:11px;color:var(--text3);}
+.notice-item .n-body{font-size:13px;color:var(--text2);margin-top:8px;line-height:1.6;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* CHIP */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:16px 0;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <h1>MedERP</h1>
+    <p>College Management System</p>
+  </div>
+  <div class="admin-badge">
+    <div class="admin-avatar">AO</div>
+    <div class="admin-info">
+      <p>Admin Officer</p>
+      <span>Super Admin</span>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-section">Core</div>
+    <div class="nav-item active" onclick="showSection('dashboard',this)"><span class="icon">🏠</span> Dashboard</div>
+    <div class="nav-section">Academic</div>
+    <div class="nav-item" onclick="showSection('students',this)"><span class="icon">🎓</span> Student Management</div>
+    <div class="nav-item" onclick="showSection('faculty',this)"><span class="icon">👩‍🏫</span> Faculty & HR</div>
+    <div class="nav-item" onclick="showSection('attendance',this)"><span class="icon">📋</span> Attendance <span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="showSection('timetable',this)"><span class="icon">🗓</span> Timetable</div>
+    <div class="nav-section">Finance</div>
+    <div class="nav-item" onclick="showSection('fees',this)"><span class="icon">💳</span> Fee & Accounts</div>
+    <div class="nav-section">Academics</div>
+    <div class="nav-item" onclick="showSection('exams',this)"><span class="icon">📝</span> Exam & Results</div>
+    <div class="nav-item" onclick="showSection('library',this)"><span class="icon">📚</span> Library</div>
+    <div class="nav-section">Communication</div>
+    <div class="nav-item" onclick="showSection('notices',this)"><span class="icon">📢</span> Notices & Events <span class="nav-badge">5</span></div>
+  </nav>
+  <div class="sidebar-footer">MedERP v2.0 · Medical College</div>
+</aside>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div class="topbar-left">
+      <h2 id="page-title">Dashboard</h2>
+      <p id="page-sub">Welcome back, Admin Officer · <span id="cur-date"></span></p>
+    </div>
+    <div class="topbar-right">
+      <button class="top-btn" onclick="showModal('addModal')">+ Quick Add</button>
+      <div class="top-icon">🔔<div class="notif-dot"></div></div>
+      <div class="top-icon">⚙️</div>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="sec-dashboard">
+      <p class="section-title">Good Morning, Admin</p>
+      <p class="section-sub">Here's what's happening at the college today.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="stat-label">Total Students</div>
+          <div class="stat-value" style="color:var(--accent)">1,284</div>
+          <div class="stat-sub">↑ 48 new this semester</div>
+          <div class="stat-icon">🎓</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Faculty Members</div>
+          <div class="stat-value" style="color:var(--accent2)">87</div>
+          <div class="stat-sub">6 departments</div>
+          <div class="stat-icon">👩‍🏫</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">Fee Collection</div>
+          <div class="stat-value" style="color:var(--accent3)">₹84L</div>
+          <div class="stat-sub">↑ 12% vs last month</div>
+          <div class="stat-icon">💰</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Pending Dues</div>
+          <div class="stat-value" style="color:var(--danger)">₹9.2L</div>
+          <div class="stat-sub">142 students pending</div>
+          <div class="stat-icon">⚠️</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Monthly Fee Collection (₹L)</span></div>
+          <div style="padding:16px 20px 20px">
+            <div class="bar-chart" id="fee-chart"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Today's Attendance Overview</span></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div><p style="font-size:13px;font-weight:600;">MBBS — Year 1</p><p style="font-size:12px;color:var(--text3)">160 students</p></div>
+              <div style="text-align:right"><p style="font-size:13px;color:var(--accent)">91%</p><div class="prog-bar" style="width:140px"><div class="prog-fill" style="width:91%"></div></div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div><p style="font-size:13px;font-weight:600;">MBBS — Year 2</p><p style="font-size:12px;color:var(--text3)">148 students</p></div>
+              <div style="text-align:right"><p style="font-size:13px;color:var(--accent2)">85%</p><div class="prog-bar" style="width:140px"><div class="prog-fill" style="width:85%;background:linear-gradient(90deg,var(--accent2),rgba(14,165,233,.3))"></div></div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div><p style="font-size:13px;font-weight:600;">B.Pharm — Year 1</p><p style="font-size:12px;color:var(--text3)">120 students</p></div>
+              <div style="text-align:right"><p style="font-size:13px;color:var(--accent3)">78%</p><div class="prog-bar" style="width:140px"><div class="prog-fill" style="width:78%;background:linear-gradient(90deg,var(--accent3),rgba(245,158,11,.3))"></div></div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div><p style="font-size:13px;font-weight:600;">Pharm.D — Year 3</p><p style="font-size:12px;color:var(--text3)">95 students</p></div>
+              <div style="text-align:right"><p style="font-size:13px;color:var(--danger)">68%</p><div class="prog-bar" style="width:140px"><div class="prog-fill" style="width:68%;background:linear-gradient(90deg,var(--danger),rgba(239,68,68,.3))"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent Activities</span></div>
+          <div style="padding:16px 20px">
+            <div class="timeline">
+              <div class="tl-item"><div class="tl-dot">📝</div><div class="tl-content"><p>Exam schedule published — Final MBBS</p><span>Today, 10:24 AM</span></div></div>
+              <div class="tl-item"><div class="tl-dot">💳</div><div class="tl-content"><p>Fee receipt generated — Ananya Sharma</p><span>Today, 09:11 AM</span></div></div>
+              <div class="tl-item"><div class="tl-dot">👤</div><div class="tl-content"><p>New student enrolled — Rohit Mehta (B.Pharm)</p><span>Yesterday, 4:30 PM</span></div></div>
+              <div class="tl-item"><div class="tl-dot">📚</div><div class="tl-content"><p>14 books issued — Library</p><span>Yesterday, 2:00 PM</span></div></div>
+              <div class="tl-item"><div class="tl-dot">📢</div><div class="tl-content"><p>Notice: Blood Donation Camp — Aug 12</p><span>2 days ago</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Quick Access</span></div>
+          <div style="padding:16px 20px">
+            <div class="quick-grid" style="grid-template-columns:repeat(3,1fr)">
+              <div class="quick-card" onclick="showSection('students',null)"><div class="qicon">🎓</div><p>Add Student</p></div>
+              <div class="quick-card" onclick="showSection('fees',null)"><div class="qicon">💳</div><p>Collect Fee</p></div>
+              <div class="quick-card" onclick="showSection('attendance',null)"><div class="qicon">✅</div><p>Attendance</p></div>
+              <div class="quick-card" onclick="showSection('exams',null)"><div class="qicon">📝</div><p>Results</p></div>
+              <div class="quick-card" onclick="showSection('library',null)"><div class="qicon">📚</div><p>Issue Book</p></div>
+              <div class="quick-card" onclick="showSection('notices',null)"><div class="qicon">📢</div><p>Post Notice</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENT MANAGEMENT -->
+    <div class="section" id="sec-students">
+      <p class="section-title">Student Management</p>
+      <p class="section-sub">Manage enrollments, profiles, and academic records.</p>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card green"><div class="stat-label">MBBS</div><div class="stat-value" style="color:var(--accent)">642</div><div class="stat-sub">5 batches</div></div>
+        <div class="stat-card blue"><div class="stat-label">B.Pharm</div><div class="stat-value" style="color:var(--accent2)">310</div><div class="stat-sub">4 batches</div></div>
+        <div class="stat-card amber"><div class="stat-label">Pharm.D</div><div class="stat-value" style="color:var(--accent3)">214</div><div class="stat-sub">3 batches</div></div>
+        <div class="stat-card red"><div class="stat-label">M.Pharm</div><div class="stat-value" style="color:var(--danger)">118</div><div class="stat-sub">2 specializations</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Student Directory</span>
+          <div class="card-actions">
+            <button class="btn btn-primary" onclick="showModal('addStudentModal')">+ Enroll Student</button>
+            <button class="btn btn-secondary">Export</button>
+          </div>
+        </div>
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div class="search-bar">
+            <input class="search-input" placeholder="Search by name, roll no, course..." style="max-width:300px" oninput="filterTable(this,'studentTable')">
+            <select class="search-input" style="max-width:160px">
+              <option>All Courses</option><option>MBBS</option><option>B.Pharm</option><option>Pharm.D</option><option>M.Pharm</option>
+            </select>
+            <select class="search-input" style="max-width:120px">
+              <option>All Years</option><option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option>
+            </select>
+          </div>
+        </div>
+        <table id="studentTable">
+          <thead><tr><th>Roll No</th><th>Name</th><th>Course</th><th>Year</th><th>DOB</th><th>Contact</th><th>Fee Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td>MC2024001</td><td><strong>Priya Sharma</strong></td><td>MBBS</td><td>Year 2</td><td>12/03/2003</td><td>98765-43210</td><td><span class="badge badge-green">Paid</span></td><td><button class="btn btn-secondary btn-sm">View</button> <button class="btn btn-secondary btn-sm">Edit</button></td></tr>
+            <tr><td>MC2024002</td><td><strong>Rohit Mehta</strong></td><td>B.Pharm</td><td>Year 1</td><td>25/07/2004</td><td>87654-32109</td><td><span class="badge badge-amber">Partial</span></td><td><button class="btn btn-secondary btn-sm">View</button> <button class="btn btn-secondary btn-sm">Edit</button></td></tr>
+            <tr><td>MC2023045</td><td><strong>Ananya Singh</strong></td><td>Pharm.D</td><td>Year 3</td><td>08/11/2002</td><td>76543-21098</td><td><span class="badge badge-green">Paid</span></td><td><button class="btn btn-secondary btn-sm">View</button> <button class="btn btn-secondary btn-sm">Edit</button></td></tr>
+            <tr><td>MC2023067</td><td><strong>Arjun Patel</strong></td><td>MBBS</td><td>Year 3</td><td>15/05/2001</td><td>65432-10987</td><td><span class="badge badge-red">Due</span></td><td><button class="btn btn-secondary btn-sm">View</button> <button class="btn btn-secondary btn-sm">Edit</button></td></tr>
+            <tr><td>MC2022012</td><td><strong>Kavita Rao</strong></td><td>M.Pharm</td><td>Year 2</td><td>20/09/2000</td><td>54321-09876</td><td><span class="badge badge-green">Paid</span></td><td><button class="btn btn-secondary btn-sm">View</button> <button class="btn btn-secondary btn-sm">Edit</button></td></tr>
+            <tr><td>MC2024078</td><td><strong>Deepak Kumar</strong></td><td>B.Pharm</td><td>Year 1</td><td>30/01/2004</td><td>43210-98765</td><td><span class="badge badge-amber">Partial</span></td><td><button class="btn btn-secondary btn-sm">View</button> <button class="btn btn-secondary btn-sm">Edit</button></td></tr>
+            <tr><td>MC2021034</td><td><strong>Neha Joshi</strong></td><td>MBBS</td><td>Year 4</td><td>14/06/1999</td><td>32109-87654</td><td><span class="badge badge-green">Paid</span></td><td><button class="btn btn-secondary btn-sm">View</button> <button class="btn btn-secondary btn-sm">Edit</button></td></tr>
+          </tbody>
+        </table>
+        <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:12px;color:var(--text3)">Showing 7 of 1,284 students</span>
+          <div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm">←</button><button class="btn btn-secondary btn-sm" style="background:var(--accent);color:#0a0f1a">1</button><button class="btn btn-secondary btn-sm">2</button><button class="btn btn-secondary btn-sm">3</button><button class="btn btn-secondary btn-sm">→</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FACULTY & HR -->
+    <div class="section" id="sec-faculty">
+      <p class="section-title">Faculty & HR</p>
+      <p class="section-sub">Manage staff records, departments, and HR operations.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card green"><div class="stat-label">Total Faculty</div><div class="stat-value" style="color:var(--accent)">87</div><div class="stat-sub">6 departments</div></div>
+        <div class="stat-card blue"><div class="stat-label">Non-Teaching</div><div class="stat-value" style="color:var(--accent2)">42</div><div class="stat-sub">Support & admin</div></div>
+        <div class="stat-card amber"><div class="stat-label">On Leave Today</div><div class="stat-value" style="color:var(--accent3)">5</div><div class="stat-sub">Approved leaves</div></div>
+        <div class="stat-card red"><div class="stat-label">Pending Reviews</div><div class="stat-value" style="color:var(--danger)">8</div><div class="stat-sub">Appraisals due</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Faculty Directory</span>
+          <div class="card-actions">
+            <button class="btn btn-primary">+ Add Faculty</button>
+            <button class="btn btn-secondary">Payroll</button>
+          </div>
+        </div>
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div class="search-bar">
+            <input class="search-input" placeholder="Search faculty..." style="max-width:260px" oninput="filterTable(this,'facultyTable')">
+            <select class="search-input" style="max-width:180px">
+              <option>All Departments</option><option>Pharmacology</option><option>Anatomy</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option>
+            </select>
+          </div>
+        </div>
+        <table id="facultyTable">
+          <thead><tr><th>ID</th><th>Name</th><th>Designation</th><th>Department</th><th>Qualification</th><th>Experience</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td>FAC001</td><td><strong>Dr. Sunita Verma</strong></td><td>Professor & HOD</td><td>Pharmacology</td><td>MD, Ph.D</td><td>18 yrs</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+            <tr><td>FAC002</td><td><strong>Dr. Rajesh Iyer</strong></td><td>Associate Prof.</td><td>Anatomy</td><td>MD</td><td>12 yrs</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+            <tr><td>FAC003</td><td><strong>Dr. Meera Nair</strong></td><td>Asst. Professor</td><td>Biochemistry</td><td>M.Sc, Ph.D</td><td>7 yrs</td><td><span class="badge badge-amber">On Leave</span></td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+            <tr><td>FAC004</td><td><strong>Dr. Kiran Shah</strong></td><td>Professor</td><td>Pathology</td><td>MD, DNB</td><td>21 yrs</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+            <tr><td>FAC005</td><td><strong>Dr. Anil Mathur</strong></td><td>Lecturer</td><td>Microbiology</td><td>M.D</td><td>4 yrs</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+            <tr><td>FAC006</td><td><strong>Dr. Pooja Desai</strong></td><td>Asst. Professor</td><td>Pharmacology</td><td>M.Pharm, Ph.D</td><td>9 yrs</td><td><span class="badge badge-red">Resigned</span></td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Leave Applications</span><button class="btn btn-secondary btn-sm">View All</button></div>
+          <table>
+            <thead><tr><th>Faculty</th><th>Type</th><th>From</th><th>To</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Dr. Meera Nair</td><td>Medical</td><td>01 Aug</td><td>07 Aug</td><td><span class="badge badge-green">Approved</span></td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+              <tr><td>Dr. Anil Mathur</td><td>Casual</td><td>12 Aug</td><td>13 Aug</td><td><span class="badge badge-amber">Pending</span></td><td><button class="btn btn-primary btn-sm">Review</button></td></tr>
+              <tr><td>Dr. Kiran Shah</td><td>Earned</td><td>20 Aug</td><td>25 Aug</td><td><span class="badge badge-amber">Pending</span></td><td><button class="btn btn-primary btn-sm">Review</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Department Strength</span></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">Pharmacology</span><div style="display:flex;align-items:center;gap:10px"><div class="prog-bar" style="width:120px"><div class="prog-fill" style="width:80%"></div></div><span style="font-size:12px;color:var(--text2)">20</span></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">Anatomy</span><div style="display:flex;align-items:center;gap:10px"><div class="prog-bar" style="width:120px"><div class="prog-fill" style="width:60%;background:linear-gradient(90deg,var(--accent2),rgba(14,165,233,.3))"></div></div><span style="font-size:12px;color:var(--text2)">15</span></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">Pathology</span><div style="display:flex;align-items:center;gap:10px"><div class="prog-bar" style="width:120px"><div class="prog-fill" style="width:52%;background:linear-gradient(90deg,var(--accent3),rgba(245,158,11,.3))"></div></div><span style="font-size:12px;color:var(--text2)">13</span></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">Biochemistry</span><div style="display:flex;align-items:center;gap:10px"><div class="prog-bar" style="width:120px"><div class="prog-fill" style="width:44%"></div></div><span style="font-size:12px;color:var(--text2)">11</span></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">Microbiology</span><div style="display:flex;align-items:center;gap:10px"><div class="prog-bar" style="width:120px"><div class="prog-fill" style="width:36%;background:linear-gradient(90deg,var(--danger),rgba(239,68,68,.3))"></div></div><span style="font-size:12px;color:var(--text2)">9</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div class="section" id="sec-attendance">
+      <p class="section-title">Attendance Management</p>
+      <p class="section-sub">Track and manage student & faculty attendance records.</p>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Mark Today's Attendance</span>
+            <div class="card-actions">
+              <select class="search-input btn-sm" style="max-width:180px"><option>MBBS Year 1 — Sec A</option><option>B.Pharm Year 2</option><option>Pharm.D Year 3</option></select>
+              <button class="btn btn-primary">Save</button>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Roll No</th><th>Student Name</th><th>Present</th><th>Absent</th><th>Late</th></tr></thead>
+            <tbody id="att-table">
+              <tr><td>MC001</td><td>Priya Sharma</td><td><input type="radio" name="a1" checked></td><td><input type="radio" name="a1"></td><td><input type="radio" name="a1"></td></tr>
+              <tr><td>MC002</td><td>Rohit Mehta</td><td><input type="radio" name="a2"></td><td><input type="radio" name="a2" checked></td><td><input type="radio" name="a2"></td></tr>
+              <tr><td>MC003</td><td>Ananya Singh</td><td><input type="radio" name="a3" checked></td><td><input type="radio" name="a3"></td><td><input type="radio" name="a3"></td></tr>
+              <tr><td>MC004</td><td>Arjun Patel</td><td><input type="radio" name="a4" checked></td><td><input type="radio" name="a4"></td><td><input type="radio" name="a4"></td></tr>
+              <tr><td>MC005</td><td>Kavita Rao</td><td><input type="radio" name="a5"></td><td><input type="radio" name="a5"></td><td><input type="radio" name="a5" checked></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Low Attendance Alert (&lt;75%)</span><span class="nav-badge">3</span></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><p style="font-size:13px;font-weight:600">Arjun Patel</p><p style="font-size:11px;color:var(--text3)">MBBS Year 3 · MC2023067</p></div>
+              <div class="att-circle att-low">68%</div>
+            </div>
+            <div class="divider"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><p style="font-size:13px;font-weight:600">Deepak Kumar</p><p style="font-size:11px;color:var(--text3)">B.Pharm Year 1 · MC2024078</p></div>
+              <div class="att-circle att-low">71%</div>
+            </div>
+            <div class="divider"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><p style="font-size:13px;font-weight:600">Sneha Pillai</p><p style="font-size:11px;color:var(--text3)">Pharm.D Year 2 · MC2023099</p></div>
+              <div class="att-circle att-mid">74%</div>
+            </div>
+            <button class="btn btn-secondary" style="margin-top:4px">Send Warning Letters</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Monthly Attendance Report</span>
+          <div class="card-actions">
+            <select class="search-input btn-sm" style="max-width:120px"><option>August 2025</option><option>July 2025</option></select>
+            <button class="btn btn-secondary">Download</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Student</th><th>Course</th><th>Total Days</th><th>Present</th><th>Absent</th><th>Late</th><th>Attendance %</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Priya Sharma</td><td>MBBS Y2</td><td>22</td><td>20</td><td>1</td><td>1</td><td>91%</td><td><span class="badge badge-green">Good</span></td></tr>
+            <tr><td>Rohit Mehta</td><td>B.Pharm Y1</td><td>22</td><td>19</td><td>3</td><td>0</td><td>86%</td><td><span class="badge badge-green">Good</span></td></tr>
+            <tr><td>Arjun Patel</td><td>MBBS Y3</td><td>22</td><td>15</td><td>7</td><td>0</td><td>68%</td><td><span class="badge badge-red">Low</span></td></tr>
+            <tr><td>Kavita Rao</td><td>M.Pharm Y2</td><td>22</td><td>20</td><td>0</td><td>2</td><td>91%</td><td><span class="badge badge-green">Good</span></td></tr>
+            <tr><td>Deepak Kumar</td><td>B.Pharm Y1</td><td>22</td><td>16</td><td>6</td><td>0</td><td>71%</td><td><span class="badge badge-red">Low</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TIMETABLE -->
+    <div class="section" id="sec-timetable">
+      <p class="section-title">Timetable</p>
+      <p class="section-sub">Weekly class schedules for all courses and batches.</p>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">MBBS Year 2 — Weekly Schedule</span>
+          <div class="card-actions">
+            <select class="search-input btn-sm" style="max-width:200px"><option>MBBS Year 2</option><option>MBBS Year 1</option><option>B.Pharm Year 1</option><option>Pharm.D Year 3</option></select>
+            <button class="btn btn-primary">Edit Schedule</button>
+            <button class="btn btn-secondary">Print</button>
+          </div>
+        </div>
+        <div style="padding:16px 20px;overflow-x:auto">
+          <div class="tt-grid">
+            <div class="tt-cell header"></div>
+            <div class="tt-cell header">Monday</div>
+            <div class="tt-cell header">Tuesday</div>
+            <div class="tt-cell header">Wednesday</div>
+            <div class="tt-cell header">Thursday</div>
+            <div class="tt-cell header">Friday</div>
+            <div class="tt-cell header">Saturday</div>
+
+            <div class="tt-cell header" style="font-size:9px">8–9 AM</div>
+            <div class="tt-cell pharm"><div>Pharmacology</div><div class="tt-time">Dr. Verma</div></div>
+            <div class="tt-cell anatomy"><div>Anatomy</div><div class="tt-time">Dr. Iyer</div></div>
+            <div class="tt-cell chem"><div>Biochemistry</div><div class="tt-time">Dr. Nair</div></div>
+            <div class="tt-cell pharm"><div>Pharmacology</div><div class="tt-time">Dr. Verma</div></div>
+            <div class="tt-cell patho"><div>Pathology</div><div class="tt-time">Dr. Shah</div></div>
+            <div class="tt-cell free">—</div>
+
+            <div class="tt-cell header" style="font-size:9px">9–10 AM</div>
+            <div class="tt-cell anatomy"><div>Anatomy</div><div class="tt-time">Dr. Iyer</div></div>
+            <div class="tt-cell patho"><div>Pathology</div><div class="tt-time">Dr. Shah</div></div>
+            <div class="tt-cell pharm"><div>Pharmacology</div><div class="tt-time">Dr. Verma</div></div>
+            <div class="tt-cell chem"><div>Biochemistry</div><div class="tt-time">Dr. Nair</div></div>
+            <div class="tt-cell anatomy"><div>Anatomy</div><div class="tt-time">Dr. Iyer</div></div>
+            <div class="tt-cell free">—</div>
+
+            <div class="tt-cell header" style="font-size:9px">10–12 PM</div>
+            <div class="tt-cell lab" style="grid-column:span 1"><div>Lab — Pharm</div><div class="tt-time">Practical</div></div>
+            <div class="tt-cell free">Library</div>
+            <div class="tt-cell lab"><div>Lab — Patho</div><div class="tt-time">Practical</div></div>
+            <div class="tt-cell free">Library</div>
+            <div class="tt-cell lab"><div>Lab — Micro</div><div class="tt-time">Practical</div></div>
+            <div class="tt-cell free">—</div>
+
+            <div class="tt-cell header" style="font-size:9px">1–2 PM</div>
+            <div class="tt-cell free">Lunch</div>
+            <div class="tt-cell free">Lunch</div>
+            <div class="tt-cell free">Lunch</div>
+            <div class="tt-cell free">Lunch</div>
+            <div class="tt-cell free">Lunch</div>
+            <div class="tt-cell free">—</div>
+
+            <div class="tt-cell header" style="font-size:9px">2–4 PM</div>
+            <div class="tt-cell patho"><div>Pathology</div><div class="tt-time">Dr. Shah</div></div>
+            <div class="tt-cell pharm"><div>Pharmacology</div><div class="tt-time">Dr. Verma</div></div>
+            <div class="tt-cell free">Tutorial</div>
+            <div class="tt-cell patho"><div>Pathology</div><div class="tt-time">Dr. Shah</div></div>
+            <div class="tt-cell chem"><div>Biochemistry</div><div class="tt-time">Dr. Nair</div></div>
+            <div class="tt-cell free">—</div>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+            <div class="chip" style="border-color:rgba(0,201,167,.3);color:var(--accent)">🟢 Pharmacology</div>
+            <div class="chip" style="border-color:rgba(14,165,233,.3);color:var(--accent2)">🔵 Biochemistry</div>
+            <div class="chip" style="border-color:rgba(245,158,11,.3);color:var(--accent3)">🟡 Anatomy</div>
+            <div class="chip" style="border-color:rgba(239,68,68,.3);color:var(--danger)">🔴 Pathology</div>
+            <div class="chip" style="border-color:rgba(139,92,246,.3);color:#a78bfa">🟣 Lab / Practical</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEE & ACCOUNTS -->
+    <div class="section" id="sec-fees">
+      <p class="section-title">Fee & Accounts</p>
+      <p class="section-sub">Manage fee collection, dues, and financial reports.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card green"><div class="stat-label">Collected (This Month)</div><div class="stat-value" style="color:var(--accent)">₹84L</div><div class="stat-sub">↑ 12% vs July</div></div>
+        <div class="stat-card blue"><div class="stat-label">Total Annual Target</div><div class="stat-value" style="color:var(--accent2)">₹6.4Cr</div><div class="stat-sub">68% collected</div></div>
+        <div class="stat-card amber"><div class="stat-label">Pending Dues</div><div class="stat-value" style="color:var(--accent3)">₹9.2L</div><div class="stat-sub">142 students</div></div>
+        <div class="stat-card red"><div class="stat-label">Scholarships</div><div class="stat-value" style="color:var(--danger)">₹12L</div><div class="stat-sub">38 beneficiaries</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Transactions</span>
+            <button class="btn btn-primary btn-sm">+ Collect Fee</button>
+          </div>
+          <table>
+            <thead><tr><th>Receipt No</th><th>Student</th><th>Amount</th><th>Date</th><th>Mode</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>RC-8821</td><td>Priya Sharma</td><td><strong>₹85,000</strong></td><td>05 Aug</td><td>Online</td><td><span class="badge badge-green">Success</span></td></tr>
+              <tr><td>RC-8820</td><td>Kavita Rao</td><td><strong>₹62,000</strong></td><td>04 Aug</td><td>DD</td><td><span class="badge badge-green">Success</span></td></tr>
+              <tr><td>RC-8819</td><td>Rohit Mehta</td><td><strong>₹40,000</strong></td><td>03 Aug</td><td>UPI</td><td><span class="badge badge-amber">Partial</span></td></tr>
+              <tr><td>RC-8818</td><td>Ananya Singh</td><td><strong>₹75,000</strong></td><td>02 Aug</td><td>Online</td><td><span class="badge badge-green">Success</span></td></tr>
+              <tr><td>RC-8817</td><td>Deepak Kumar</td><td><strong>₹30,000</strong></td><td>01 Aug</td><td>Cash</td><td><span class="badge badge-amber">Partial</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Fee Structure (2024–25)</span></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+            <div style="background:var(--surface2);border-radius:10px;padding:14px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;font-weight:600">MBBS</span><span style="color:var(--accent);font-weight:600">₹14,00,000 / yr</span></div>
+              <div class="fee-summary"><span class="chip">Tuition ₹10L</span><span class="chip">Hostel ₹2L</span><span class="chip">Misc ₹2L</span></div>
+            </div>
+            <div style="background:var(--surface2);border-radius:10px;padding:14px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;font-weight:600">B.Pharm</span><span style="color:var(--accent2);font-weight:600">₹85,000 / yr</span></div>
+              <div class="fee-summary"><span class="chip">Tuition ₹65K</span><span class="chip">Hostel ₹12K</span><span class="chip">Misc ₹8K</span></div>
+            </div>
+            <div style="background:var(--surface2);border-radius:10px;padding:14px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;font-weight:600">Pharm.D</span><span style="color:var(--accent3);font-weight:600">₹75,000 / yr</span></div>
+              <div class="fee-summary"><span class="chip">Tuition ₹58K</span><span class="chip">Hostel ₹12K</span><span class="chip">Misc ₹5K</span></div>
+            </div>
+            <div style="background:var(--surface2);border-radius:10px;padding:14px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;font-weight:600">M.Pharm</span><span style="color:var(--danger);font-weight:600">₹1,20,000 / yr</span></div>
+              <div class="fee-summary"><span class="chip">Tuition ₹95K</span><span class="chip">Hostel ₹15K</span><span class="chip">Misc ₹10K</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXAM & RESULTS -->
+    <div class="section" id="sec-exams">
+      <p class="section-title">Exam & Results</p>
+      <p class="section-sub">Manage schedules, hall tickets, marks entry, and results.</p>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Upcoming Exams</span>
+            <button class="btn btn-primary btn-sm">+ Schedule Exam</button>
+          </div>
+          <table>
+            <thead><tr><th>Exam</th><th>Course</th><th>Date</th><th>Time</th><th>Hall</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Final — Pharmacology</strong></td><td>MBBS Y3</td><td>15 Aug</td><td>10:00 AM</td><td>Hall A</td><td><span class="badge badge-amber">Upcoming</span></td></tr>
+              <tr><td><strong>Internal — Anatomy</strong></td><td>MBBS Y1</td><td>18 Aug</td><td>9:00 AM</td><td>Hall B</td><td><span class="badge badge-amber">Upcoming</span></td></tr>
+              <tr><td><strong>Practical — Lab Pharm</strong></td><td>B.Pharm Y2</td><td>20 Aug</td><td>2:00 PM</td><td>Lab 1</td><td><span class="badge badge-amber">Upcoming</span></td></tr>
+              <tr><td><strong>Supplementary</strong></td><td>MBBS Y2</td><td>25 Aug</td><td>10:00 AM</td><td>Hall C</td><td><span class="badge badge-blue">Scheduled</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Result Summary — July 2025</span></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">
+            <div style="background:var(--surface2);border-radius:10px;padding:14px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:13px;font-weight:600">MBBS Year 2 — Biochemistry</span><span class="badge badge-green">Published</span></div>
+              <div style="display:flex;gap:12px;font-size:12px;color:var(--text2)">
+                <span>Appeared: 148</span><span>Passed: 131</span><span style="color:var(--accent)">Pass%: 88.5</span>
+              </div>
+              <div class="prog-bar" style="margin-top:8px"><div class="prog-fill" style="width:88.5%"></div></div>
+            </div>
+            <div style="background:var(--surface2);border-radius:10px;padding:14px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:13px;font-weight:600">B.Pharm Year 1 — Organic Chem</span><span class="badge badge-green">Published</span></div>
+              <div style="display:flex;gap:12px;font-size:12px;color:var(--text2)">
+                <span>Appeared: 120</span><span>Passed: 98</span><span style="color:var(--accent2)">Pass%: 81.7</span>
+              </div>
+              <div class="prog-bar" style="margin-top:8px"><div class="prog-fill" style="width:81.7%;background:linear-gradient(90deg,var(--accent2),rgba(14,165,233,.3))"></div></div>
+            </div>
+            <button class="btn btn-secondary">Enter Marks</button>
+            <button class="btn btn-primary">Generate Hall Tickets</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Student Marks — MBBS Year 2 (Internal)</span>
+          <div class="card-actions">
+            <button class="btn btn-secondary">Download Marksheet</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Roll No</th><th>Name</th><th>Anatomy /100</th><th>Biochemistry /100</th><th>Pharmacology /100</th><th>Total /300</th><th>Grade</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>MC2024001</td><td>Priya Sharma</td><td>82</td><td>88</td><td>91</td><td><strong>261</strong></td><td><span class="badge badge-green">A+</span></td><td><span class="badge badge-green">Pass</span></td></tr>
+            <tr><td>MC2023045</td><td>Ananya Singh</td><td>76</td><td>80</td><td>74</td><td><strong>230</strong></td><td><span class="badge badge-blue">B+</span></td><td><span class="badge badge-green">Pass</span></td></tr>
+            <tr><td>MC2023067</td><td>Arjun Patel</td><td>55</td><td>48</td><td>62</td><td><strong>165</strong></td><td><span class="badge badge-amber">C</span></td><td><span class="badge badge-amber">Conditional</span></td></tr>
+            <tr><td>MC2022012</td><td>Kavita Rao</td><td>90</td><td>94</td><td>88</td><td><strong>272</strong></td><td><span class="badge badge-green">A+</span></td><td><span class="badge badge-green">Pass</span></td></tr>
+            <tr><td>MC2021034</td><td>Neha Joshi</td><td>34</td><td>40</td><td>38</td><td><strong>112</strong></td><td><span class="badge badge-red">F</span></td><td><span class="badge badge-red">Fail</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div class="section" id="sec-library">
+      <p class="section-title">Library Management</p>
+      <p class="section-sub">Track books, issues, returns, and inventory.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card green"><div class="stat-label">Total Books</div><div class="stat-value" style="color:var(--accent)">8,420</div><div class="stat-sub">642 titles</div></div>
+        <div class="stat-card blue"><div class="stat-label">Issued Today</div><div class="stat-value" style="color:var(--accent2)">34</div><div class="stat-sub">14 students, 4 faculty</div></div>
+        <div class="stat-card amber"><div class="stat-label">Overdue</div><div class="stat-value" style="color:var(--accent3)">18</div><div class="stat-sub">Fine: ₹1,840</div></div>
+        <div class="stat-card red"><div class="stat-label">Lost / Damaged</div><div class="stat-value" style="color:var(--danger)">7</div><div class="stat-sub">Action required</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Popular Medical Books</span><button class="btn btn-primary btn-sm">+ Add Book</button></div>
+        <div style="padding:16px 20px">
+          <div class="book-grid">
+            <div class="book-card"><div class="b-spine" style="background:linear-gradient(90deg,#00c9a7,#0ea5e9)"></div><div class="b-title">Gray's Anatomy</div><div class="b-author">Susan Standring</div><div class="b-copies">Copies: 12 | Available: 8</div></div>
+            <div class="book-card"><div class="b-spine" style="background:linear-gradient(90deg,#0ea5e9,#6366f1)"></div><div class="b-title">Harrison's Principles</div><div class="b-author">Kasper et al.</div><div class="b-copies">Copies: 8 | Available: 3</div></div>
+            <div class="book-card"><div class="b-spine" style="background:linear-gradient(90deg,#f59e0b,#ef4444)"></div><div class="b-title">Goodman & Gilman's</div><div class="b-author">Brunton et al.</div><div class="b-copies">Copies: 15 | Available: 10</div></div>
+            <div class="book-card"><div class="b-spine" style="background:linear-gradient(90deg,#8b5cf6,#ec4899)"></div><div class="b-title">Robbins Pathology</div><div class="b-author">Kumar, Abbas</div><div class="b-copies">Copies: 20 | Available: 14</div></div>
+            <div class="book-card"><div class="b-spine" style="background:linear-gradient(90deg,#10b981,#3b82f6)"></div><div class="b-title">Lehninger Biochemistry</div><div class="b-author">Nelson & Cox</div><div class="b-copies">Copies: 18 | Available: 11</div></div>
+            <div class="book-card"><div class="b-spine" style="background:linear-gradient(90deg,#ef4444,#f59e0b)"></div><div class="b-title">Katzung Pharmacology</div><div class="b-author">Bertram Katzung</div><div class="b-copies">Copies: 22 | Available: 16</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Issue / Return Log</span>
+          <div class="card-actions">
+            <button class="btn btn-primary">Issue Book</button>
+            <button class="btn btn-secondary">Return Book</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Book Title</th><th>Borrower</th><th>Type</th><th>Issue Date</th><th>Due Date</th><th>Status</th><th>Fine</th></tr></thead>
+          <tbody>
+            <tr><td>Gray's Anatomy</td><td>Priya Sharma</td><td>Student</td><td>25 Jul</td><td>08 Aug</td><td><span class="badge badge-amber">Due Soon</span></td><td>—</td></tr>
+            <tr><td>Robbins Pathology</td><td>Arjun Patel</td><td>Student</td><td>10 Jul</td><td>24 Jul</td><td><span class="badge badge-red">Overdue</span></td><td>₹140</td></tr>
+            <tr><td>Katzung Pharmacology</td><td>Dr. Verma</td><td>Faculty</td><td>01 Aug</td><td>15 Aug</td><td><span class="badge badge-green">Active</span></td><td>—</td></tr>
+            <tr><td>Harrison's Principles</td><td>Kavita Rao</td><td>Student</td><td>28 Jul</td><td>11 Aug</td><td><span class="badge badge-green">Active</span></td><td>—</td></tr>
+            <tr><td>Lehninger Biochemistry</td><td>Rohit Mehta</td><td>Student</td><td>05 Jul</td><td>19 Jul</td><td><span class="badge badge-red">Overdue</span></td><td>₹200</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NOTICES & EVENTS -->
+    <div class="section" id="sec-notices">
+      <p class="section-title">Notices & Events</p>
+      <p class="section-sub">Post announcements, circulars, and manage events.</p>
+
+      <div class="two-col">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <strong style="font-size:14px">Active Notices</strong>
+            <button class="btn btn-primary" onclick="showModal('noticeModal')">+ Post Notice</button>
+          </div>
+          <div class="notice-list">
+            <div class="notice-item urgent">
+              <div class="n-title">⚠️ Exam Schedule — Final MBBS (Year 5)</div>
+              <div class="n-meta">Posted by: Admin Officer · 05 Aug 2025 · For: All MBBS Students</div>
+              <div class="n-body">Final MBBS examinations will commence from August 15, 2025. All students must collect hall tickets from the examination cell by August 12. No late collection will be entertained.</div>
+            </div>
+            <div class="notice-item info">
+              <div class="n-title">🩸 Blood Donation Camp — August 12</div>
+              <div class="n-meta">Posted by: NSS Cell · 03 Aug 2025 · For: All</div>
+              <div class="n-body">A blood donation camp is organized by the NSS unit in collaboration with the Red Cross Society. Venue: College Auditorium, Time: 9 AM – 4 PM. Certificates will be issued.</div>
+            </div>
+            <div class="notice-item">
+              <div class="n-title">📅 College Holiday — Independence Day</div>
+              <div class="n-meta">Posted by: Principal Office · 02 Aug 2025 · For: All</div>
+              <div class="n-body">The college will remain closed on August 15, 2025 on account of Independence Day. The flag hoisting ceremony will be held at 8:00 AM in the college ground.</div>
+            </div>
+            <div class="notice-item info">
+              <div class="n-title">📚 Library Timing Change</div>
+              <div class="n-meta">Posted by: Librarian · 01 Aug 2025 · For: All</div>
+              <div class="n-body">Library will now remain open from 7:00 AM to 9:00 PM on all working days. Extended Saturday hours: 8 AM – 6 PM.</div>
+            </div>
+            <div class="notice-item urgent">
+              <div class="n-title">💳 Fee Payment Deadline</div>
+              <div class="n-meta">Posted by: Accounts Section · 30 Jul 2025 · For: Pending Students</div>
+              <div class="n-body">Students with pending fee dues are instructed to clear their dues before August 10, 2025, failing which their examination forms will not be accepted.</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <strong style="font-size:14px">August 2025</strong>
+            <div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm">←</button><button class="btn btn-secondary btn-sm">→</button></div>
+          </div>
+          <div class="card" style="padding:16px 20px">
+            <div class="cal-header">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div class="cal-grid" id="cal-grid"></div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <div class="card-header"><span class="card-title">Upcoming Events</span></div>
+            <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;gap:12px;align-items:center"><div style="background:var(--accent);color:#0a0f1a;padding:6px 10px;border-radius:8px;text-align:center;min-width:44px"><div style="font-size:18px;font-weight:700">12</div><div style="font-size:9px">AUG</div></div><div><p style="font-size:13px;font-weight:600">Blood Donation Camp</p><p style="font-size:11px;color:var(--text3)">NSS · Auditorium · 9 AM</p></div></div>
+              <div class="divider"></div>
+              <div style="display:flex;gap:12px;align-items:center"><div style="background:rgba(239,68,68,.15);color:var(--danger);padding:6px 10px;border-radius:8px;text-align:center;min-width:44px"><div style="font-size:18px;font-weight:700">15</div><div style="font-size:9px">AUG</div></div><div><p style="font-size:13px;font-weight:600">Independence Day 🇮🇳</p><p style="font-size:11px;color:var(--text3)">College Holiday</p></div></div>
+              <div class="divider"></div>
+              <div style="display:flex;gap:12px;align-items:center"><div style="background:rgba(14,165,233,.15);color:var(--accent2);padding:6px 10px;border-radius:8px;text-align:center;min-width:44px"><div style="font-size:18px;font-weight:700">20</div><div style="font-size:9px">AUG</div></div><div><p style="font-size:13px;font-weight:600">Practical Exams Begin</p><p style="font-size:11px;color:var(--text3)">B.Pharm Y2 · Lab 1</p></div></div>
+              <div class="divider"></div>
+              <div style="display:flex;gap:12px;align-items:center"><div style="background:rgba(245,158,11,.15);color:var(--accent3);padding:6px 10px;border-radius:8px;text-align:center;min-width:44px"><div style="font-size:18px;font-weight:700">28</div><div style="font-size:9px">AUG</div></div><div><p style="font-size:13px;font-weight:600">Pharmacist Day Seminar</p><p style="font-size:11px;color:var(--text3)">Seminar Hall · 11 AM</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h3>Quick Add</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-secondary" style="padding:14px;font-size:13px" onclick="closeModal('addModal');showModal('addStudentModal')">🎓 Enroll Student</button>
+      <button class="btn btn-secondary" style="padding:14px;font-size:13px" onclick="closeModal('addModal')">👩‍🏫 Add Faculty</button>
+      <button class="btn btn-secondary" style="padding:14px;font-size:13px" onclick="closeModal('addModal')">💳 Collect Fee</button>
+      <button class="btn btn-secondary" style="padding:14px;font-size:13px" onclick="closeModal('addModal');showModal('noticeModal')">📢 Post Notice</button>
+    </div>
+    <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('addModal')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addStudentModal">
+  <div class="modal">
+    <h3>Enroll New Student</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>First Name</label><input placeholder="e.g. Priya"></div>
+      <div class="form-group"><label>Last Name</label><input placeholder="e.g. Sharma"></div>
+      <div class="form-group"><label>Course</label><select><option>MBBS</option><option>B.Pharm</option><option>Pharm.D</option><option>M.Pharm</option></select></div>
+      <div class="form-group"><label>Year / Batch</label><select><option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option></select></div>
+      <div class="form-group"><label>Date of Birth</label><input type="date"></div>
+      <div class="form-group"><label>Gender</label><select><option>Female</option><option>Male</option><option>Other</option></select></div>
+      <div class="form-group"><label>Mobile No.</label><input placeholder="10-digit number"></div>
+      <div class="form-group"><label>Parent Contact</label><input placeholder="Guardian number"></div>
+      <div class="form-group full"><label>Address</label><textarea placeholder="Full residential address"></textarea></div>
+      <div class="form-group"><label>Category</label><select><option>General</option><option>OBC</option><option>SC</option><option>ST</option></select></div>
+      <div class="form-group"><label>Aadhar No.</label><input placeholder="12-digit Aadhar"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('addStudentModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('addStudentModal')">Enroll Student</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="noticeModal">
+  <div class="modal">
+    <h3>Post New Notice</h3>
+    <div class="form-grid">
+      <div class="form-group full"><label>Notice Title</label><input placeholder="e.g. Exam Schedule Announcement"></div>
+      <div class="form-group"><label>Category</label><select><option>General</option><option>Exam</option><option>Fee</option><option>Event</option><option>Holiday</option><option>Urgent</option></select></div>
+      <div class="form-group"><label>Audience</label><select><option>All</option><option>Students Only</option><option>Faculty Only</option><option>MBBS Students</option><option>Pharm Students</option></select></div>
+      <div class="form-group full"><label>Notice Content</label><textarea rows="4" placeholder="Enter notice details..."></textarea></div>
+      <div class="form-group"><label>Valid From</label><input type="date"></div>
+      <div class="form-group"><label>Valid Till</label><input type="date"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('noticeModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('noticeModal')">Post Notice</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Date
+document.getElementById('cur-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+// Navigation
+function showSection(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const titles = {dashboard:'Dashboard',students:'Student Management',faculty:'Faculty & HR',attendance:'Attendance',timetable:'Timetable',fees:'Fee & Accounts',exams:'Exam & Results',library:'Library',notices:'Notices & Events'};
+  const subs = {dashboard:'Overview of college operations',students:'Manage enrollments and student records',faculty:'HR and faculty directory',attendance:'Track daily attendance records',timetable:'Weekly class schedules',fees:'Fee collection and financial reports',exams:'Exam schedules and results',library:'Books and issue management',notices:'Announcements and events'};
+  document.getElementById('page-title').textContent = titles[id] || id;
+  document.getElementById('page-sub').textContent = subs[id] || '';
+}
+
+// Modal
+function showModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); }));
+
+// Filter table
+function filterTable(input, tableId) {
+  const q = input.value.toLowerCase();
+  document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// Fee bar chart
+const months = ['Feb','Mar','Apr','May','Jun','Jul','Aug'];
+const vals = [62,71,55,80,74,78,84];
+const chart = document.getElementById('fee-chart');
+const maxV = Math.max(...vals);
+months.forEach((m,i) => {
+  const w = document.createElement('div');
+  w.className = 'bar-wrap';
+  w.innerHTML = `<div class="bar-val">${vals[i]}</div><div class="bar" style="height:${(vals[i]/maxV)*90}px"></div><div class="bar-label">${m}</div>`;
+  chart.appendChild(w);
+});
+
+// Calendar
+const cal = document.getElementById('cal-grid');
+const holidays = [15];
+const events = [12, 20, 28];
+const today = 5; // demo
+const offset = 5; // Aug 1 = Friday (0=Sun), adjust as needed
+for(let i=0;i<offset;i++){
+  const d = document.createElement('div');
+  d.className='cal-day';
+  cal.appendChild(d);
+}
+for(let d=1;d<=31;d++){
+  const el = document.createElement('div');
+  el.className = 'cal-day';
+  if(d===today) el.classList.add('today');
+  else if(holidays.includes(d)) el.classList.add('holiday');
+  else if(events.includes(d)) el.classList.add('has-event');
+  el.textContent = d;
+  cal.appendChild(el);
+}
+</script>
+</body>
+</html>
