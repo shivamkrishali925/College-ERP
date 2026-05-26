@@ -309,7 +309,7 @@ textarea{resize:vertical;min-height:80px;}
 
     <!-- DASHBOARD -->
     <div class="section active" id="sec-dashboard">
-      <p class="section-title"><span id="greeting">Good morning</span>, Admin Officer</p>
+      <p class="section-title"><span id="greeting">Hello</span>, Admin Officer</p>
       <p class="section-sub">Here's what's happening on campus today.</p>
 
       <div class="stats-grid">
@@ -986,7 +986,7 @@ function showSection(id, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (el) el.classList.add('active');
   const titles = {dashboard:'Dashboard',students:'Student Management',faculty:'Faculty & HR',attendance:'Attendance',timetable:'Timetable',fees:'Fee & Accounts',exams:'Exam & Results',library:'Library',notices:'Notices & Events'};
-  const subs = {dashboard:"Here's what's happening on campus today.",students:'Keep profiles, enrollments, and records tidy.',faculty:'Faculty directory and HR notes.',attendance:'Daily attendance at a glance.',timetable:'Weekly class schedule by course.',fees:'Fees, dues, and reports.',exams:'Exam schedules and results.',library:'Books, issues, and returns.',notices:'Announcements and events.'};
+  const subs = {dashboard:'Here\'s what\'s happening on campus today.',students:'Keep profiles, enrollments, and records tidy.',faculty:'Faculty directory and HR notes.',attendance:'Daily attendance at a glance.',timetable:'Weekly class schedule by course.',fees:'Fees, dues, and reports.',exams:'Exam schedules and results.',library:'Books, issues, and returns.',notices:'Announcements and events.'};
   document.getElementById('page-title').textContent = titles[id] || id;
   document.getElementById('page-sub').textContent = subs[id] || '';
 }
