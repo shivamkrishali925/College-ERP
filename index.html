@@ -19,9 +19,40 @@
   --text2: #94a3b8;
   --text3: #475569;
   --sidebar-w: 260px;
+  --row-hover: rgba(255,255,255,.02);
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface2: #f1f5f9;
+  --border: #e2e8f0;
+  --accent: #00c9a7;
+  --accent2: #0ea5e9;
+  --accent3: #f59e0b;
+  --danger: #ef4444;
+  --text: #0f172a;
+  --text2: #334155;
+  --text3: #94a3b8;
+  --row-hover: rgba(15,23,42,.04);
+  color-scheme: light;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden;}
+body,
+#sidebar,
+#topbar,
+.card,
+.stat-card,
+.quick-card,
+.nav-item,
+.modal,
+input,
+select,
+textarea,
+.search-input,
+th,
+td{transition:background-color .2s ease,color .2s ease,border-color .2s ease;}
 
 /* SIDEBAR */
 #sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;flex-shrink:0;transition:.3s;}
@@ -53,6 +84,10 @@ nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 .top-btn:hover{border-color:var(--accent);color:var(--accent);}
 .notif-dot{width:8px;height:8px;background:var(--danger);border-radius:50%;position:absolute;top:6px;right:6px;}
 .top-icon{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;}
+.theme-toggle{display:flex;align-items:center;gap:8px;padding:7px 12px;}
+.theme-toggle .theme-icon{font-size:14px;}
+.theme-toggle .theme-label{font-size:12px;font-weight:600;letter-spacing:.2px;}
+@media(max-width:720px){.theme-toggle .theme-label{display:none;}}
 
 #content{flex:1;overflow-y:auto;padding:24px 28px;}
 #content::-webkit-scrollbar{width:6px;}
@@ -92,7 +127,7 @@ table{width:100%;border-collapse:collapse;}
 th{padding:10px 16px;font-size:11px;color:var(--text3);text-align:left;text-transform:uppercase;letter-spacing:.8px;background:var(--surface2);font-weight:600;}
 td{padding:11px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
-tr:hover td{background:rgba(255,255,255,.02);}
+tr:hover td{background:var(--row-hover);}
 .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
 .badge-green{background:rgba(0,201,167,.12);color:var(--accent);}
 .badge-blue{background:rgba(14,165,233,.12);color:var(--accent2);}
@@ -261,6 +296,10 @@ textarea{resize:vertical;min-height:80px;}
     </div>
     <div class="topbar-right">
       <button class="top-btn" onclick="showModal('addModal')">+ Quick Add</button>
+      <button class="top-btn theme-toggle" id="theme-toggle" type="button" aria-label="Toggle light and dark mode" aria-pressed="false">
+        <span class="theme-icon" aria-hidden="true">🌙</span>
+        <span class="theme-label">Dark</span>
+      </button>
       <div class="top-icon">🔔<div class="notif-dot"></div></div>
       <div class="top-icon">⚙️</div>
     </div>
@@ -270,8 +309,8 @@ textarea{resize:vertical;min-height:80px;}
 
     <!-- DASHBOARD -->
     <div class="section active" id="sec-dashboard">
-      <p class="section-title">Good Morning, Admin</p>
-      <p class="section-sub">Here's what's happening at the college today.</p>
+      <p class="section-title">Good morning, Admin Officer</p>
+      <p class="section-sub">Here's what's happening on campus today.</p>
 
       <div class="stats-grid">
         <div class="stat-card green">
@@ -362,7 +401,7 @@ textarea{resize:vertical;min-height:80px;}
     <!-- STUDENT MANAGEMENT -->
     <div class="section" id="sec-students">
       <p class="section-title">Student Management</p>
-      <p class="section-sub">Manage enrollments, profiles, and academic records.</p>
+      <p class="section-sub">Keep student profiles and enrollments tidy in one place.</p>
 
       <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
         <div class="stat-card green"><div class="stat-label">MBBS</div><div class="stat-value" style="color:var(--accent)">642</div><div class="stat-sub">5 batches</div></div>
@@ -412,7 +451,7 @@ textarea{resize:vertical;min-height:80px;}
     <!-- FACULTY & HR -->
     <div class="section" id="sec-faculty">
       <p class="section-title">Faculty & HR</p>
-      <p class="section-sub">Manage staff records, departments, and HR operations.</p>
+      <p class="section-sub">Stay on top of staff details, departments, and HR notes.</p>
 
       <div class="stats-grid">
         <div class="stat-card green"><div class="stat-label">Total Faculty</div><div class="stat-value" style="color:var(--accent)">87</div><div class="stat-sub">6 departments</div></div>
@@ -478,7 +517,7 @@ textarea{resize:vertical;min-height:80px;}
     <!-- ATTENDANCE -->
     <div class="section" id="sec-attendance">
       <p class="section-title">Attendance Management</p>
-      <p class="section-sub">Track and manage student & faculty attendance records.</p>
+      <p class="section-sub">Daily attendance at a glance for students and faculty.</p>
 
       <div class="two-col">
         <div class="card">
@@ -546,7 +585,7 @@ textarea{resize:vertical;min-height:80px;}
     <!-- TIMETABLE -->
     <div class="section" id="sec-timetable">
       <p class="section-title">Timetable</p>
-      <p class="section-sub">Weekly class schedules for all courses and batches.</p>
+      <p class="section-sub">This week's class schedule across courses and batches.</p>
 
       <div class="card">
         <div class="card-header">
@@ -622,7 +661,7 @@ textarea{resize:vertical;min-height:80px;}
     <!-- FEE & ACCOUNTS -->
     <div class="section" id="sec-fees">
       <p class="section-title">Fee & Accounts</p>
-      <p class="section-sub">Manage fee collection, dues, and financial reports.</p>
+      <p class="section-sub">Fees, dues, and reports—everything in one view.</p>
 
       <div class="stats-grid">
         <div class="stat-card green"><div class="stat-label">Collected (This Month)</div><div class="stat-value" style="color:var(--accent)">₹84L</div><div class="stat-sub">↑ 12% vs July</div></div>
@@ -675,7 +714,7 @@ textarea{resize:vertical;min-height:80px;}
     <!-- EXAM & RESULTS -->
     <div class="section" id="sec-exams">
       <p class="section-title">Exam & Results</p>
-      <p class="section-sub">Manage schedules, hall tickets, marks entry, and results.</p>
+      <p class="section-sub">Exams, hall tickets, and results kept organized.</p>
 
       <div class="two-col">
         <div class="card">
@@ -739,7 +778,7 @@ textarea{resize:vertical;min-height:80px;}
     <!-- LIBRARY -->
     <div class="section" id="sec-library">
       <p class="section-title">Library Management</p>
-      <p class="section-sub">Track books, issues, returns, and inventory.</p>
+      <p class="section-sub">Books, issues, returns, and inventory made simple.</p>
 
       <div class="stats-grid">
         <div class="stat-card green"><div class="stat-label">Total Books</div><div class="stat-value" style="color:var(--accent)">8,420</div><div class="stat-sub">642 titles</div></div>
@@ -786,7 +825,7 @@ textarea{resize:vertical;min-height:80px;}
     <!-- NOTICES & EVENTS -->
     <div class="section" id="sec-notices">
       <p class="section-title">Notices & Events</p>
-      <p class="section-sub">Post announcements, circulars, and manage events.</p>
+      <p class="section-sub">Announcements, circulars, and events—share updates quickly.</p>
 
       <div class="two-col">
         <div>
@@ -913,6 +952,27 @@ textarea{resize:vertical;min-height:80px;}
 // Date
 document.getElementById('cur-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
+// Theme
+const themeToggle = document.getElementById('theme-toggle');
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  if (!themeToggle) return;
+  const isLight = theme === 'light';
+  themeToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+  themeToggle.querySelector('.theme-icon').textContent = isLight ? '☀️' : '🌙';
+  themeToggle.querySelector('.theme-label').textContent = isLight ? 'Light' : 'Dark';
+}
+const savedTheme = localStorage.getItem('theme');
+const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+setTheme(savedTheme || (prefersLight ? 'light' : 'dark'));
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    setTheme(current === 'light' ? 'dark' : 'light');
+  });
+}
+
 // Navigation
 function showSection(id, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -920,7 +980,7 @@ function showSection(id, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (el) el.classList.add('active');
   const titles = {dashboard:'Dashboard',students:'Student Management',faculty:'Faculty & HR',attendance:'Attendance',timetable:'Timetable',fees:'Fee & Accounts',exams:'Exam & Results',library:'Library',notices:'Notices & Events'};
-  const subs = {dashboard:'Overview of college operations',students:'Manage enrollments and student records',faculty:'HR and faculty directory',attendance:'Track daily attendance records',timetable:'Weekly class schedules',fees:'Fee collection and financial reports',exams:'Exam schedules and results',library:'Books and issue management',notices:'Announcements and events'};
+  const subs = {dashboard:"Here's what's happening on campus today.",students:'Keep profiles, enrollments, and records tidy.',faculty:'Faculty directory and HR notes.',attendance:'Daily attendance at a glance.',timetable:'Weekly class schedule by course.',fees:'Fees, dues, and reports.',exams:'Exam schedules and results.',library:'Books, issues, and returns.',notices:'Announcements and events.'};
   document.getElementById('page-title').textContent = titles[id] || id;
   document.getElementById('page-sub').textContent = subs[id] || '';
 }
