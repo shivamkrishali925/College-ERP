@@ -271,7 +271,7 @@ textarea{resize:vertical;min-height:80px;}
       <p id="page-sub">Welcome back, Admin Officer · <span id="cur-date"></span></p>
     </div>
     <div class="topbar-right">
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode"><span id="theme-icon">🌙</span><span id="theme-text">Dark</span></button>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode" aria-pressed="false"><span id="theme-icon">🌙</span><span id="theme-text">Dark</span></button>
       <button class="top-btn" onclick="showModal('addModal')">+ Quick Add</button>
       <div class="top-icon">🔔<div class="notif-dot"></div></div>
       <div class="top-icon">⚙️</div>
@@ -934,11 +934,17 @@ function applyTheme(mode, save = true) {
   document.body.classList.toggle('light-mode', isLight);
   themeIcon.textContent = isLight ? '☀️' : '🌙';
   themeText.textContent = isLight ? 'Light' : 'Dark';
+  themeToggle.setAttribute('aria-pressed', String(isLight));
+  themeToggle.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
   if (save) localStorage.setItem('theme', mode);
 }
 const storedTheme = localStorage.getItem('theme');
 const preferredTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-applyTheme(storedTheme || preferredTheme, !storedTheme);
+if (storedTheme) {
+  applyTheme(storedTheme, false);
+} else {
+  applyTheme(preferredTheme);
+}
 themeToggle.addEventListener('click', () => {
   const nextTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
   applyTheme(nextTheme);
