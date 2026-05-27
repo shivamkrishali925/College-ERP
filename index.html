@@ -271,7 +271,7 @@ textarea{resize:vertical;min-height:80px;}
       <p id="page-sub">Welcome back, Admin Officer · <span id="cur-date"></span></p>
     </div>
     <div class="topbar-right">
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode" title="Toggle dark and light mode"><span id="theme-icon">🌙</span><span id="theme-text">Dark</span></button>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode"><span id="theme-icon">🌙</span><span id="theme-text">Dark</span></button>
       <button class="top-btn" onclick="showModal('addModal')">+ Quick Add</button>
       <div class="top-icon">🔔<div class="notif-dot"></div></div>
       <div class="top-icon">⚙️</div>
@@ -938,7 +938,7 @@ function applyTheme(mode, save = true) {
 }
 const storedTheme = localStorage.getItem('theme');
 const preferredTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-applyTheme(storedTheme || preferredTheme, false);
+applyTheme(storedTheme || preferredTheme, !storedTheme);
 themeToggle.addEventListener('click', () => {
   const nextTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
   applyTheme(nextTheme);
